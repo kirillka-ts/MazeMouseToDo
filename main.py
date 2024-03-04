@@ -20,7 +20,7 @@ while running:
            running = False
         if event.type == events.MOUSEBUTTONDOWN:
             if event.button == 1:
-                Maze.add_mouse((event.pos[0], event.pos[1]))
+                Maze.add_mouse(event.pos[0], event.pos[1])
 
     graphics.fill("black")
     # рисуем лабиринт
