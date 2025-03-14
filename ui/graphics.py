@@ -1,10 +1,12 @@
 import pygame
-
 import settings
 from ui import screen
 
 Image = pygame.Surface
 flip = pygame.display.flip
+
+
+pygame.init()
 
 
 def fill(color):
@@ -19,12 +21,15 @@ def load_image(path, size=(1, 1)):
 
 # клиенты будут передавать координаты лабиринта
 def draw_image(image, x, y):
-    """Здесь нужен pygame blit с пересчетом на settings.tile_size"""
-    pass
+    screen.blit(image, (x * settings.tile_size[0] + settings.view_left_top[0], y * settings.tile_size[1] + settings.view_left_top[1]))
 
 
 # клиенты будут передавать координаты лабиринта
 def draw_circle(color, x, y, r):
-    """Здесь нужен pygame draw.circle с пересчетом на settings.tile_size"""
-    pass
-
+    pygame.draw.circle(
+        screen, 
+        color, 
+        (x * settings.tile_size[0] + settings.view_left_top[0], 
+         y * settings.tile_size[1] + settings.view_left_top[1]), 
+        r * settings.tile_size[0]
+    )

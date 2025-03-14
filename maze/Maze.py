@@ -1,9 +1,16 @@
 import settings
-from maze.mice import Mouse2
+from maze.mice import Mouse2, SmartMouse
 from maze.tiles import Room_tile, Wall_tile
+from maze.cheese import Cheese
+import random
+from maze.kill_button import KillButton
 
-maze = []
+
 mouse = None
+maze = []
+mice = []
+cheese = None
+kill_button = KillButton()
 ##########################################################
 # Грузим карту
 with open(settings.map_file) as f:
@@ -19,17 +26,22 @@ for row, line in enumerate(map_txt):
 ###########################################################
 
 
-# Рисуем все: и тайлы и мышей
 def draw():
     for row in range(len(maze)):
         for column in range(len(maze[row])):
             maze[row][column].draw()
 
-    if mouse is not None:
+    for mouse in mice:
         mouse.draw()
 
+    if cheese is not None:
+        cheese.draw()
+        for mouse in mice:
+            mouse.goto_cheese(cheese.x, cheese.y)
 
-# Получаем тайл по координатам лабиринта
+    kill_button.draw()
+
+
 def get_tile(x, y):
     if 0 <= y < len(maze) and 0 <= x < len(maze[int(y)]):
         tile_column, tile_row = int(x), int(y)
@@ -38,13 +50,33 @@ def get_tile(x, y):
         return None
 
 
-# двигаем, все что движется
-# вызов этой функции постоянно в цикле в main.py
 def update(delta_time):
-    if mouse is not None:
+    for mouse in mice:
         mouse.update(delta_time)
 
 
 def add_mouse(x, y):
-    global mouse
-    mouse = Mouse2(x, y)
+    global mice
+    mice.append(SmartMouse(x, y))
+
+
+def add_cheese(x, y):
+    global cheese
+    cheese = Cheese(x, y)
+
+
+def change_cheese_pos():
+    global cheese
+    while True:
+        x = random.randint(0, len(maze[0]) - 1)
+        y = random.randint(0, len(maze) - 1)
+        tile = get_tile(x, y)
+        if isinstance(tile, Room_tile):
+            cheese = Cheese(x, y)
+            break
+
+
+def kill_mouse():
+    if len(mice):
+        mouse = random.choice(mice)
+        mouse.dead()

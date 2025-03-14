@@ -1,4 +1,3 @@
-import maze.Maze
 from maze import Maze
 from maze.directions import directions
 from ui import graphics

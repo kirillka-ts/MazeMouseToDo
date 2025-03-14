@@ -1,16 +1,21 @@
+import random
 import settings
 from maze import Maze
 from tasks import tasks
-from tasks.tasks import greetings
 from ui import events
 from ui import graphics
+from gen import Backtracking
+
 
 FPS = 60
 running = True
 clock = events.Clock()
 
-# Приветствие. Его нужно удалить
-greetings()
+
+backtracking = Backtracking(12, 12)
+backtracking.generate(1, 1)
+backtracking.write_board()
+
 
 while running:
     for event in events.get_event_queue():
@@ -20,13 +25,22 @@ while running:
            running = False
         if event.type == events.MOUSEBUTTONDOWN:
             if event.button == 1:
-                Maze.add_mouse(event.pos[0], event.pos[1])
+                x = (event.pos[0] - settings.view_left_top[0]) // settings.tile_size[0]
+                y = (event.pos[1] - settings.view_left_top[1]) // settings.tile_size[1]
+                if x == 15 and y == 0:
+                    Maze.kill_mouse()
+                else:
+                    Maze.add_mouse(x, y)
+            if event.button == 3:
+                Maze.add_cheese(
+                    (event.pos[0] - settings.view_left_top[0]) // settings.tile_size[0],
+                    (event.pos[1] - settings.view_left_top[1]) // settings.tile_size[1]
+                )
 
     graphics.fill("black")
-    # рисуем лабиринт
+               
     Maze.draw()
-    tasks.check_tasks()
+
     graphics.flip()
     clock.tick(FPS)
-    # обновляем весь лабиринт
     Maze.update(1 / FPS)
